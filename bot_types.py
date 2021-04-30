@@ -9,6 +9,9 @@ askgendersearch.row('Девушек', "Парней")
 cities = telebot.types.ReplyKeyboardMarkup(1, 1)
 cities.row('Ташкент')
 
+create_username = telebot.types.ReplyKeyboardMarkup(1, 1)
+create_username.row('Сейчас создам', 'Продолжить без него')
+
 sex = telebot.types.ReplyKeyboardMarkup(1, 1)
 sex.row('Я парень', 'Я девушка')
 

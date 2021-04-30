@@ -43,6 +43,12 @@ def start_reg_random():
     return random.choice(phrases)
 
 
+def username_random():
+    phrases = ['Ну ладно',
+               'Хорошо, будь по твоему', ]
+    return random.choice(phrases)
+
+
 def end_reg_random():
     phrases = ['Отлично! Так выглядит твоя анкета:',
                'Спасибо, вот как тебя будут видеть пользователи:']

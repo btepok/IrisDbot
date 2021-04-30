@@ -34,8 +34,6 @@ def send_mes(message, text):
 @bot.message_handler(commands=['my_acc'])
 def user_acc(message, with_mes=True):
     chat_id = message.chat.id
-    # 1, 'Серафим', 'Я мужчина', 19, 'Девушек', 'Стройный блондин', 'Ташкент', 'Null', 'Null', 'Null', '1252459587',
-    # None, None, 'Null', 'phoyo'
     acc_info = db_manage.select_by_id(chat_id)
 
     photo = acc_info['photo']
@@ -47,7 +45,7 @@ def user_acc(message, with_mes=True):
 
 
 @bot.message_handler(commands=['start'])
-def start_message(message):
+def start_message(message, first=True):
     db_manage.likes_db(message.chat.id)
     if db_manage.is_exist(message.chat.id):
         send_mes(message, 'Ты уже есть у нас:')
@@ -55,11 +53,40 @@ def start_message(message):
         if message.chat.username == None:
             print('asd')
     else:
-        bot.send_message(message.chat.id, bot_phrases.hello_random(), reply_markup=bot_types.askyesno)
-        bot.send_sticker(message.chat.id, bot_phrases.hello_sticker())
+        if first:
+            bot.send_message(message.chat.id, bot_phrases.hello_random(), reply_markup=bot_types.askyesno)
+            bot.send_sticker(message.chat.id, bot_phrases.hello_sticker())
+        else:
+            bot.send_message(message.chat.id, 'Перейдём к регистрации?', reply_markup=bot_types.askyesno)
+
         if message.chat.username == None:
-            send_mes(message, 'Я заметил что у тебя нет юзернейма')
-        bot.register_next_step_handler(message, start_reg)
+            send_mes(message, 'Я заметил что у тебя нет юзернейма\n'
+                              'Так конечно тоже можно, но человек не сможет выйти'
+                              ' на твой аккаунт пока ты не напишешь ему')
+            bot.send_message(message.chat.id, 'Продолжим так или ты всё же создашь юзернейм?',
+                             reply_markup=bot_types.create_username)
+
+            bot.register_next_step_handler(message, not_username)
+            username = False
+        else:
+            username = True
+
+        if username:
+            bot.register_next_step_handler(message, start_reg)
+
+
+def not_username(message):
+    if is_text(message):
+        ans = message.text.lower()
+        if ans == 'продолжить без него':
+            send_mes(message, bot_phrases.username_random())
+        elif ans == 'сейчас создам':
+            send_mes(message, 'Окей, как закончишь, отправляй /start чтобы зарегистрировать себя')
+        else:
+            bot.send_message(message.chat.id, 'Прости, я не понял тебя. Ответь на вопрос',
+                             reply_markup=bot_types.create_username)
+            bot.register_next_step_handler(message, not_username)
+
 
 
 def start_reg(message):
@@ -256,6 +283,14 @@ def write_mes(message, rec_user_id):
                                       f'Сообщение: {message.text}', parse_mode='HTML')
         bot.send_sticker(message.chat.id, bot_phrases.send_sticker())
         bot.send_message(message.chat.id, 'Отправил')
+
+
+@bot.message_handler(content_types=['text'])
+def text_response(message):
+    send_mes(message, 'testing')
+    send_mes(message, '/start \n'
+                      '/search \n'
+                      '/my_acc \n')
 
 
 while True:
