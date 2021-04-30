@@ -33,7 +33,6 @@ def send_mes(message, text):
 
 @bot.message_handler(commands=['my_acc'])
 def user_acc(message, with_mes=True):
-    print(message)
     chat_id = message.chat.id
     # 1, 'Серафим', 'Я мужчина', 19, 'Девушек', 'Стройный блондин', 'Ташкент', 'Null', 'Null', 'Null', '1252459587',
     # None, None, 'Null', 'phoyo'
